@@ -1,4 +1,5 @@
 import Fastify, { FastifyError, FastifyReply, FastifyRequest } from "fastify";
+import fastifySocketIO from "fastify-socket.io";
 import cors from '@fastify/cors';
 import { routers } from "./router";
  
@@ -13,16 +14,19 @@ app.setErrorHandler((err: FastifyError, req: FastifyRequest, res:FastifyReply) =
     });
 }); 
 
-const PORT:number = 8090;
+const PORT:number = 8091;
 const HOST:string = "127.0.0.1";
 
 async function start() {
     await app.register(cors);
     await app.register(routers);
+    await app.register(fastifySocketIO);
     
+    
+
     try {
         await app.listen({port: PORT, host: HOST}, () => {
-            console.log("API rodando na url: http://", HOST, ":", PORT, "\n");
+            console.log(`API rodando na URL: http://${HOST}:${PORT}\n`);
         });       
     } catch {
         process.exit(1);
