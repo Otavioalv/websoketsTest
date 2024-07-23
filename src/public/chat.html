@@ -15,20 +15,24 @@
                 Olá username - Sala
             </div>
 
+            
+
             <div id="chat-content" class="conteiner-message">
                 <div class="messages" id="messages">
                     <div class="new_message">
-                        <label for="" class="form-label">
+                        <label class="form-label">
                             <strong>username</strong>
-                            <span>texto - 10/10 10/20</span>
+                            <span>texto - 10/10</span>
+                            <span id="status"></span>
                         </label>
                     </div>
                 </div>
             </div>
             <input type="text" class="form-control" placeholder="Digite sua menssagem" id="menssagem">
+            <button type="button" id="sendMensage">Send</button>
         </div>
     </div>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="./chat.js"></script>
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+    <script  type="module" src="./chat.js"></script>
 </body>
 </html>

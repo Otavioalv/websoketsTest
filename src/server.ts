@@ -1,8 +1,11 @@
 import Fastify, { FastifyError, FastifyReply, FastifyRequest } from "fastify";
+import fastifyStatic from '@fastify/static';
 import cors from '@fastify/cors';
 import { routers } from "./router";
 import { socketIO } from "./socketIO";
 import fastifySocketIO from "fastify-socket.io";
+import path from "path";
+
 
 const app = Fastify({ logger: false });
 
@@ -22,6 +25,12 @@ async function start() {
   await app.register(cors);
   await app.register(routers);
   await app.register(fastifySocketIO);
+
+
+  await app.register(fastifyStatic, {
+    root: path.join(__dirname, 'public'), 
+    prefix: '/frontEnd', 
+  });
 
   // Configura o Socket.IO
   await socketIO(app);

@@ -13,10 +13,10 @@ export const socketIO = async (app: FastifyInstance) => {
         if(err) throw err;
 
         app.io.on('connection', (socket:Socket) => {
-            console.log("um usuario conectou: ", socket);
+            console.log("Um usuario conectou: ");
 
             socket.on('disconnect', () => {
-                console.log('useuario desconectiouy');
+                console.log('Um usuario desconectou');
             });
 
             socket.on('message', message => {
