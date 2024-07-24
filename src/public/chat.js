@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // on = escutar evento
     socket.on('message', (data) => {
         createNewMessage(data);
+        window.scrollTo(0, document.body.scrollHeight);
     });
   
     document.getElementById('sendMensage').addEventListener('click', () => {
