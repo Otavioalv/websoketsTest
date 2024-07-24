@@ -1,15 +1,42 @@
+:root {
+    --box-shadown-config: .5em .5em 0 black
+}
+
 body {
     padding: 0;
     margin: 0;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
 }
 
-
-.container {
+form {
     display: flex;
+    justify-content: center;
     align-items: center;
+    height: 100vh;
+}
+
+.container-chat{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.row-chat {
+    position: relative;
+    display: flex;
     justify-content: center;
     flex-direction: column;
+    height: 100vh;
+    width: 80%;
+}
+
+.container {
+    background-color: white;
+    border-radius: 1em;
+    box-shadow: .5em .5em 0 black;
+    width: 20%;
+    padding: 2em;
 }
 
 
@@ -17,10 +44,10 @@ body {
     display: flex;
     flex-direction: column;
     margin: 2em 0;
-    width: 20%;
+    width: 100%;
 }
 
-.row select, .row input, .row button{
+.row select, .row input, .row button, .row-chat > button{
     height: 4em;
     border-radius: .5em;
     border: 1px solid black;
@@ -28,13 +55,14 @@ body {
     outline: 0;
 }
 
-.row input {
+.row input, .row select{
     padding: 0 1.5em;
 }
 
 
-.row select:hover, .row input:hover, .row button:hover{
-    background-color: #7900003a;    
+.row select:hover, .row input:hover, .row button:hover, .row-chat > button:hover, .chatText > button:hover{ 
+    transition: all .1s ease-in-out;
+    box-shadow: .3em .3em 0 black;
     cursor: pointer;
 }
 
@@ -49,10 +77,32 @@ body {
 }
 
 .form-control {
+    display: flex;
+    align-items: center;
     width: 100%;
     height: 4em;
 }
 
 .conteiner-message {
-    margin: 5em 0;
+}
+
+.messages {
+    padding: 2em;
+}
+
+.chatText {
+    position: sticky;
+    width: 100%;
+    bottom: 0;
+    display: flex;
+}
+
+#logout {
+    position: sticky;
+    width: 100%;
+    top: 0;
+}
+
+#username {
+    font-size: 1.2em;
 }

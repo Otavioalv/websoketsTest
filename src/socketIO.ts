@@ -7,6 +7,22 @@ declare module 'fastify' {
     }
 }
 
+interface RoomUser {
+    soket_id: string, 
+    usermame: string,
+    room: string
+}
+
+interface Message  {
+    text: string, 
+    username: string, 
+    room: string,
+    createdAt: Date
+}
+
+const users: RoomUser[] = [];
+const messages: Message[] = [];
+
 export const socketIO = async (app: FastifyInstance) => {
     console.log("soketIO");
     app.ready(err => {
@@ -19,10 +35,55 @@ export const socketIO = async (app: FastifyInstance) => {
                 console.log('Um usuario desconectou');
             });
 
-            socket.on('message', message => {
-                console.log('message: ', message);
-                app.io.emit('message', message);
+            socket.on('select_room', (data, callback) => {
+                const userData:RoomUser = {
+                    room: data.room,
+                    usermame: data.username, 
+                    soket_id: socket.id
+                }
+
+                // coloca usuario em uma sala especifica
+                socket.join(data.room);
+                
+                const userInRoom = users.find(user => user.usermame === data.username && user.room === data.room);
+                
+                if(userInRoom) {
+                    userInRoom.soket_id = socket.id; 
+                }
+                else {
+                    users.push(userData);
+                }
+
+                const messagesRoom = getMessagesRoom(data.room);
+                callback(messagesRoom);
+            });
+
+
+            socket.on('message', data => {
+                const message: Message = {
+                    room: data.room, 
+                    username: data.username, 
+                    text: data.message,
+                    createdAt: new Date()
+                }
+
+                messages.push(message);
+
+                // utilizamos o APP pra retornar pra todos os usuarios
+                // Enviar para usuario da sala, como base na sala especifica configurada no join
+                app.io.to(data.room).emit("message", message);
+
+                // Retorna a menssagem, pra pegar o retorna o front tambem tem que ter um ON do mesmo nome pra ouvir o evento
+                // app.io.emit('message', message);
+
+
             });
         });
     });
+}
+
+function getMessagesRoom(room: string) {
+    const messagesRoom = messages.filter(message => message.room === room);
+
+    return messagesRoom;
 }
