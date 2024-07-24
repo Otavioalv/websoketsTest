@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.emit("select_room", {username, room}, response => {
       response.forEach(element => {
           // console.log("menssagem: ", element);
-          createNewMessage(element, username);
+          createNewMessage(element);
           window.scrollTo(0, document.body.scrollHeight);
       });
     });
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
     // on = escutar evento
     socket.on('message', (data) => {
-        createNewMessage(data, username);
+        createNewMessage(data);
     });
   
     document.getElementById('sendMensage').addEventListener('click', () => {
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-function createNewMessage(data, username) {
+function createNewMessage(data) {
     const messageList = document.getElementById('messages');
     const nowDate = new Date(data.createdAt);
     const today = nowDate.toLocaleDateString();
@@ -81,7 +81,7 @@ function createNewMessage(data, username) {
     const newMessage = document.createElement('div');
     newMessage.innerHTML = `
       <label class="form-label">
-          <strong>${username}</strong>
+          <strong>${data.username}</strong>
           <span>${data.text} - ${today}</span>
           <span id="status"></span>
       </label>
