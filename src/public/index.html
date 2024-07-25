@@ -11,11 +11,11 @@
         <div class="container">
             <div class="row">
                 <select name="room" id="select_room">
-                    <option value="-1">Selecione a sala</option>
-                    <option value="node">Node</option>
-                    <option value="java">Java</option>
-                    <option value="reactjs">React.js</option>
-                    <option value="elixir">Elixir</option>
+                    <option value="-1">Selecione a sala ou usuario</option>
+                    <option value="node">Node : Room</option>
+                    <option value="java">Java : Room</option>
+                    <option value="reactjs">React.js : Room</option>
+                    <option value="elixir">Elixir : Room</option>
                 </select>
             </div>
 
@@ -31,5 +31,8 @@
             </div>
         </div>
     </form>
+
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+    <script  type="module" src="./index.js"></script>
 </body>
 </html>

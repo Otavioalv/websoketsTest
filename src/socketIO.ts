@@ -13,6 +13,12 @@ interface RoomUser {
     room: string
 }
 
+export interface MessagePrivate {
+    username: string, 
+    text: string, 
+    createdAt: Date,
+}
+
 export interface Message  {
     text: string, 
     username: string, 
@@ -58,6 +64,16 @@ export const socketIO = async (app: FastifyInstance) => {
                 callback(messagesRoom);
             });
 
+            socket.on('menssage-private', data => {
+                const send:MessagePrivate = {
+                    username: data.username, 
+                    text: data.message, 
+                    createdAt: new Date()
+                };
+
+                socket.broadcast.to(data.toid).emit('sendMsg', send);
+            });
+
 
             socket.on('message', data => {
                 const message: Message = {
@@ -79,6 +95,10 @@ export const socketIO = async (app: FastifyInstance) => {
                 // app.io.emit('message', message);
 
 
+            });
+
+            socket.on('get_users', callback => {
+                callback(users);
             });
         });
     });
