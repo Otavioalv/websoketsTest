@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "start": "tsx watch src/server.ts",
+    "start:user": "tsx watch specificUser/server.test.ts", 
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

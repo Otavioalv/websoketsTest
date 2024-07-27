@@ -71,6 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('logout').addEventListener('click', (event) => {
       window.location.href = "index.html"
     }); 
+
+    
 });
 
 

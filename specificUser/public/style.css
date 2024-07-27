@@ -1,0 +1,73 @@
+:root {
+    --color-gray-first: #373739;
+    --color-gray: #19191a;
+    --black: #020202;
+    --yellow-firt: #c9b977;
+    --yellow: #ecdda2;
+}
+
+body {
+    background-color: var(--color-gray);
+}
+
+* {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.row {
+    width: 80%;
+    text-align: center;
+}
+
+.row h2 {
+    color: var(--yellow);
+}
+
+
+.list-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+}
+
+.item-list-button {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 1em;
+    background-color: transparent;
+    border: none;
+    border-radius: .3em;
+    font-size: 1em;
+    background-color: var(--yellow);
+    color: var(--color-gray);
+}
+
+.list-group-item {
+    list-style: none;
+    text-align: center;
+    padding: 0;
+    width: 50%;
+    margin: .3em 0;
+    border-radius: .3em;
+    font-size: 1em;
+    background-color: var(--yellow);
+    color: var(--color-gray);
+}
+
+.item-list-button:hover {
+    background-color: var(--yellow-firt);
+    cursor: pointer;
+}
+
+.list-group-item:hover {
+    background-color: var(--yellow-firt);
+    cursor: pointer;
+}

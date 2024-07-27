@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Aplicaçao SockeIO</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <h2>List of Users</h2>
+            <ul class="list-group" id='list-users'>
+                <li class="list-group-item">
+                    <button id="userId" class="item-list-button">username</button>
+                </li>
+            </ul>
+        </div>
+
+        <h1 style="color: white" id="username"></h1>
+    </div>
+
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+    <script  type="module" src="./index.js"></script>
+</body>
+</html>

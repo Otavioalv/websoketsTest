@@ -1,19 +1,15 @@
 import Fastify, { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 import fastifyStatic from '@fastify/static';
 import cors from '@fastify/cors';
-import { routers } from "./router";
-import { socketIO } from "./socketIO";
+import { routers } from "./utils/router";
+import { socketIO } from "./utils/socketIO";
 import fastifySocketIO from "fastify-socket.io";
 import path from "path";
 
 import { Socket, Server as SocketIOServer } from "socket.io";
 
 
-declare module 'fastify' {
-    interface FastifyInstance {
-        io: SocketIOServer;
-    }
-}
+
 
 const app = Fastify({ logger: false });
 

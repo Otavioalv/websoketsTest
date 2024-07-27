@@ -2,6 +2,6 @@ import { FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest } f
 
 export async function routers(fastify: FastifyInstance, options: FastifyPluginOptions) {
     fastify.get('/', async (req: FastifyRequest, res: FastifyReply) => {
-        res.status(200).send({message: "success"});
+        res.status(200).send({message: "success test API"});
     });
 }
