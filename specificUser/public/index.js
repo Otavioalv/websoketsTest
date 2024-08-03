@@ -14,11 +14,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         listUsers.innerHTML = "";
         userList.forEach(user => {
             const userElement = document.createElement('li');
-            userElement.id = "selectUser";
-
+            userElement.id = "sotavioelectUser";
+            
             userElement.className = 'list-group-item';
             userElement.innerHTML = `
-                <button id="${user.id}" class="item-list">${socket.id === user.id ? "You: " + user.username : user.username}</button>
+                <button id="${user.id}" class="item-list-button">${socket.id === user.id ? "You: " + user.username : user.username}</button>
             `;
             
             listUsers.appendChild(userElement);
@@ -44,8 +44,8 @@ document.addEventListener('DOMContentLoaded', async () => {
  
 
     function getUsername() {
-        // const username = window.prompt("Enter Your Name: ");
-        const username = "nome ussuario"
+        const username = window.prompt("Enter Your Name: ");
+        // const username = "nome ussuario"
         if(username === '')
             window.location.reload();
     

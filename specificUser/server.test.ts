@@ -3,6 +3,7 @@ import { Config } from "./utils/config";
 import fastifySocketIO from "fastify-socket.io";
 import { routers } from "./utils/router";
 import { Socket, Server as SocketIOServer } from "socket.io";
+import cors from '@fastify/cors';
 
 declare module 'fastify' {
     interface FastifyInstance {
@@ -37,6 +38,7 @@ class ServerFasti {
 
     async appConfig(): Promise<void>{
         try {
+            this.app.register(cors);
             new Config(this.app);
             await this.app.register(fastifySocketIO);
             await this.app.register(routers);   
@@ -49,8 +51,6 @@ class ServerFasti {
         this.app.ready(err => {
             if(err) throw err;
             this.app.io.on('connection', (socket: Socket) => {
-                
-
                 socket.on('username', (userName) => {
                     const newUser: userInterface = {
                         id: socket.id,
