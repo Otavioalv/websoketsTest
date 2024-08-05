@@ -38,7 +38,7 @@ class ServerFasti {
 
     async appConfig(): Promise<void>{
         try {
-            this.app.register(cors);
+            await this.app.register(cors);
             new Config(this.app);
             await this.app.register(fastifySocketIO);
             await this.app.register(routers);   
@@ -60,9 +60,9 @@ class ServerFasti {
                     this.users.push(newUser);
                     const len = this.users.length - 1;
 
-                    console.log(this.users);
-                    console.log("Ultimoo: ", this.users[len].id);
-                    console.log("Atual: ", socket.id);
+                    // console.log(this.users);
+                    // console.log("Ultimoo: ", this.users[len].id);
+                    // console.log("Atual: ", socket.id);
 
                     this.app.io.emit('userList', this.users, this.users[len].id);
                 });

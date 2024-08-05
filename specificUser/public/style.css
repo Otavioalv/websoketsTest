@@ -18,6 +18,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 }
 
 .row {
@@ -27,6 +28,10 @@ body {
 
 .row h2 {
     color: var(--yellow);
+}
+
+#userSelected {
+    color: white;
 }
 
 
@@ -70,4 +75,57 @@ body {
 .list-group-item:hover {
     background-color: var(--yellow-firt);
     cursor: pointer;
+}
+
+.listMessages {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.listMessages li{
+    background-color: var(--yellow);
+    text-align: left;
+    border-radius: .3em;
+    padding: 1em;
+    width: 50%;
+    margin: .5em 0;
+}
+
+.listMessages li.yourUser {
+    background-color: var(--yellow-firt);
+    text-align: right;
+}
+
+.message-sender {
+    display: flex;
+    width: 50%;
+    padding: 0;
+    margin: 0;
+}
+.message-sender textarea{
+    resize: none;
+    border: none;
+    margin: 0;
+    outline: none;
+    padding: 1em;
+    width: 100%;
+    font-size: 1em;
+}
+
+.message-sender button {
+    width: 100px;
+    border: none;
+    margin: 0;
+    outline: none;
+    cursor: pointer;
+    margin-left: .3em;
+    background-color: white;
+}
+
+.message-sender button:hover {
+    filter: brightness(44%);
 }
