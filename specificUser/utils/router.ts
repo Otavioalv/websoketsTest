@@ -30,21 +30,44 @@ export async function routers(fastify: FastifyInstance, options: FastifyPluginOp
 
             if(listUsers.find(user => user.name === data.username)) {
                 console.log("usuario encontrado");
-                const [response] = await connection.execute("update user set socket_id = ?", [data.socketId]);
-
-                res.status(200).send({message: "Ja existe um usuario, pegando seus dados"});
+                await connection.execute("update user set socket_id = ? where name = ?", [data.socketId, data.username]);
+                
+                const [response] = await connection.query('SELECT id, name, socket_id as socketId from user where name =  ?', [data.username]) as [[{id: number, name: string, socketId: string}], any];
+                res.status(200).send({message: "Ja existe um usuario, pegando seus dados",  datas: response[0]});
                 return;
             }
 
-            const [response] = await connection.query('insert into user (name, socket_id) values (?, ?)', [data.username, data.socketId]);
+            await connection.query('insert into user (name, socket_id) values (?, ?)', [data.username, data.socketId]);
+            const [response] = await connection.query('SELECT id, name, socket_id as socketId from user where name =  ?', [data.username]) as [[{id: number, name: string, socketId: string}], any];
+
 
             connection.release();
-            res.status(200).send({message: "Usuario criado"});
+            res.status(200).send({message: "Usuario criado", datas: response[0]});
         } catch (error) {
             console.log(error);
             res.status(500).send({message: "Erro interno no servidor"});
         }
     }); 
+
+    fastify.post('/new-message', async(req: FastifyRequest, res: FastifyReply) => {
+        try {
+            const data = await req.body as {toUser: number, message: string, id: number};
+            const connection = await pool.getConnection();
+
+            if(!data.id || !data.message || !data.toUser) {
+                res.status(404).send({message: "Parametros invalidos"});
+                return;
+            }
+
+            console.log(data);
+
+            const [response] = await connection.query('INSERT INTO message(to_user, message, fk_id_user) values (?, ?, ?)', [data.toUser, data.message, data.id]);
+            res.status(200).send({message: "Menssagem enviada/salva"});
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({message: "Erro interno no servidor"});
+        }
+    });
 
     fastify.post('/get-message', async(req: FastifyRequest, res: FastifyReply) => {
         try {

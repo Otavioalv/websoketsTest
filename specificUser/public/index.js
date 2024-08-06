@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const username = getUsername();
     let userListDb = [];
     let selectedId;
+    let yourself = {};
     
     
 
@@ -14,18 +15,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // usernameElement.innerText = username;
 
     socket.on('userList', async (userList) => {
-        console.log(username, socket.id);
-        await fetch('http://127.0.0.1:8092/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({username: username, socketId: socket.id}),
-        }).then(async (res) => {
-            console.log(await res.json())
-        })  
-
-        
 
         userListDb = userList;
 
@@ -56,7 +45,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         // <li>ussuario says: message to usser</li>
     });
 
-    socket.on('connect', () => {
+    socket.on('connect', async () => {
+        console.log(username, socket.id);
+        yourself = await fetch('http://127.0.0.1:8092/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({username: username, socketId: socket.id}),
+        }).then(async (res) => {
+            return await res.json()
+        }).then(async (res) => {
+            console.log(res);
+            return res.datas;
+        })
+
+    console.log(yourself);
         console.log("you are connected");
     });
 
@@ -116,6 +120,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         listMessageElement.appendChild(newlistElement);
 
+        fetch('http://127.0.0.1:8092/new-message', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({toUser: messageobj.toid, message: messageobj.msg}),
+        }).then(async (res) => {
+            console.log(await res.json())
+        })  
 
         socket.emit('getMsg', messageobj);
     }
@@ -152,5 +165,5 @@ CREATE TABLE `message` (
   PRIMARY KEY (`id_message`),
   KEY `fk_id_user` (`fk_id_user`),
   CONSTRAINT `message_ibfk_1` FOREIGN KEY (`fk_id_user`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 */
