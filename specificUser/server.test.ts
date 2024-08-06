@@ -57,6 +57,8 @@ class ServerFasti {
                         username: userName
                     };
 
+
+                    console.log(socket.id);
                     this.users.push(newUser);
                     const len = this.users.length - 1;
 

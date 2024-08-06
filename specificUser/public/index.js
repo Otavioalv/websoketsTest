@@ -5,20 +5,35 @@ document.addEventListener('DOMContentLoaded', async () => {
     const username = getUsername();
     let userListDb = [];
     let selectedId;
+    
+    
 
     socket.emit("username", username);
 
     // const usernameElement = document.getElementById('username');
     // usernameElement.innerText = username;
 
-    socket.on('userList', (userList, socketId) => {
+    socket.on('userList', async (userList) => {
+        console.log(username, socket.id);
+        await fetch('http://127.0.0.1:8092/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({username: username, socketId: socket.id}),
+        }).then(async (res) => {
+            console.log(await res.json())
+        })  
+
+        
+
         userListDb = userList;
 
         const listUsers = document.getElementById('list-users');
         listUsers.innerHTML = "";
         userList.forEach(user => {
             const userElement = document.createElement('li');
-            userElement.id = "sotavioelectUser";
+            userElement.id = "selectUser";
             
             userElement.className = 'list-group-item';
             userElement.innerHTML = `
@@ -117,3 +132,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         userSelectedElement.innerText = `Submit to user: ${user.username}`;
     }
 });
+
+
+// 
+
+/* 
+CREATE TABLE `user` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(200) DEFAULT NULL,
+  `socket_id` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=80 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+CREATE TABLE `message` (
+  `id_message` int NOT NULL AUTO_INCREMENT,
+  `to_user` int DEFAULT NULL,
+  `message` varchar(700) DEFAULT NULL,
+  `fk_id_user` int DEFAULT NULL,
+  PRIMARY KEY (`id_message`),
+  KEY `fk_id_user` (`fk_id_user`),
+  CONSTRAINT `message_ibfk_1` FOREIGN KEY (`fk_id_user`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
+*/
