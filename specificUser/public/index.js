@@ -4,17 +4,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const username = getUsername();
     let userListDb = [];
-    let selectedId;
+    let selectedUser;
     let yourself = {};
     
     
 
-    socket.emit("username", username);
+    await socket.emit("username", username);
 
     // const usernameElement = document.getElementById('username');
     // usernameElement.innerText = username;
 
-    socket.on('userList', async (userList) => {
+    await socket.on('userList', async (userList) => {
 
         userListDb = userList;
 
@@ -33,19 +33,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    socket.on('sendMsg', (data) => {
+    await socket.on('sendMsg', (data) => {
         // salvar menssagens em uma lista do proprio usuario
         console.log(data);
-        const listMessageElement = window.document.getElementById('listMessages');
-        const newlistElement = window.document.createElement('li');
-
-        newlistElement.innerText = `${data.name} says: ${data.msg}`
-
-        listMessageElement.appendChild(newlistElement);
+        otherUserMessage(data);
         // <li>ussuario says: message to usser</li>
     });
 
-    socket.on('connect', async () => {
+    await socket.on('connect', async () => {
         console.log(username, socket.id);
         yourself = await fetch('http://127.0.0.1:8092/login', {
             method: 'POST',
@@ -60,16 +55,39 @@ document.addEventListener('DOMContentLoaded', async () => {
             return res.datas;
         })
 
-    console.log(yourself);
+        const listMessages = await fetch('http://127.0.0.1:8092/get-message', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({id: yourself.id}),
+        }).then(async (res) => {
+            return await res.json()
+        }).then(async (res) => {
+            return res.listMsg;
+        })
+
+        listMessages.forEach((msgs, i) => {
+            if(msgs.idUser === yourself.id) {
+                console.log("vc eviou");
+                yourMessage(msgs.message);
+            }
+            if(msgs.toUser === yourself.id) {
+                console.log("vc recebeu: ", msgs.message)
+                otherUserMessage({name: msgs.toName, msg: msgs.message});
+            }
+        });
+
+
         console.log("you are connected");
     });
 
-    socket.on('disconnect', () => {
+    await socket.on('disconnect', () => {
         console.log("you are disconnected");
     });
 
-    socket.on('exit', (userList) => {
-        console.log(userList);
+    await socket.on('exit', (userList) => {
+        console.log("Saiu: ", userList);
         userListDb = userList;
     });
     
@@ -87,6 +105,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         
     });
 
+    // data = {name: string, msg: string}
+    function otherUserMessage(data) {
+        console.log(data);
+        const listMessageElement = window.document.getElementById('listMessages');
+        const newlistElement = window.document.createElement('li');
+
+        newlistElement.innerText = `${data.name} says: ${data.msg}`;
+
+        listMessageElement.appendChild(newlistElement);
+    }
+
+    // msg: string
+    function yourMessage(msg) {
+        const listMessageElement = window.document.getElementById('listMessages');
+        const newlistElement = window.document.createElement('li');
+        newlistElement.className = "yourUser";
+        newlistElement.innerText = `Your says: ${msg}`
+        
+        listMessageElement.appendChild(newlistElement);
+    }
+
     function getUsername() {
         const username = window.prompt("Enter Your Name: ");
         // const username = "nome ussuario"
@@ -99,7 +138,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function sendMessage() {
         const messageElement = document.getElementById('message');
 
-        if(!selectedId) {
+        if(!selectedUser) {
             alert("User not selected");
             messageElement.value = "";
             return;
@@ -109,23 +148,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         const messageobj = {
             msg: messageElement.value,
             name: user.username,
-            toid: selectedId
+            toid: selectedUser.id
         }
         messageElement.value = "";
 
-        const listMessageElement = window.document.getElementById('listMessages');
-        const newlistElement = window.document.createElement('li');
-        newlistElement.className = "yourUser";
-        newlistElement.innerText = `Your says: ${messageobj.msg}`
-        
-        listMessageElement.appendChild(newlistElement);
+        yourMessage(messageobj.msg);
 
         fetch('http://127.0.0.1:8092/new-message', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({toUser: messageobj.toid, message: messageobj.msg}),
+            body: JSON.stringify({toUser: selectedUser, message: messageobj.msg, id: yourself.id}),
         }).then(async (res) => {
             console.log(await res.json())
         })  
@@ -139,7 +173,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert("cant send a message to yourself");
             return;
         }
-        selectedId = userId;
+        selectedUser = user;;
 
         const userSelectedElement = window.document.getElementById("userSelected");
         userSelectedElement.innerText = `Submit to user: ${user.username}`;
