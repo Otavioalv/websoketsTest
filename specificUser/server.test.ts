@@ -20,6 +20,7 @@ interface msgInterface {
     toid?: string, 
     msg: string, 
     name: string;
+    idUser?: string
 }
 
 
@@ -51,14 +52,23 @@ class ServerFasti {
         this.app.ready(err => {
             if(err) throw err;
             this.app.io.on('connection', (socket: Socket) => {
+            
+                
+                socket.on('user-room', (user: {id: number, name: string, socketId: string}) => {
+                    socket.join(user.id.toString());
+                    // const room = this.app.io.sockets.adapter.rooms.get(user.id.toString());
+
+                    // console.log("ROOM: ", room);
+                    // console.log("size: ", room?.size);
+                });
+
                 socket.on('username', (userName) => {
                     const newUser: userInterface = {
                         id: socket.id,
                         username: userName
                     };
 
-
-                    console.log(socket.id);
+                    // console.log(socket.id);
                     this.users.push(newUser);
                     const len = this.users.length - 1;
 
@@ -69,6 +79,27 @@ class ServerFasti {
                     this.app.io.emit('userList', this.users, this.users[len].id);
                 });
 
+                // socket.on('getMsg', (data: msgInterface) => {
+                //     // const { msg, fromUserId, toUserId } = data;
+                //     if(data.toid) {
+                //         // Formata a mensagem
+                //         const newMsg: msgInterface = {
+                //             msg: data.msg, 
+                //             name: data.name
+                //         }
+                        
+                //         if(!data.idUser) {
+                //             return;
+                //         }
+                    
+                //         // Envia a mensagem para todos os dispositivos do UserB (todos na sala toUserId)
+                //         this.app.io.to(data.idUser.toString()).emit('sendMsg', newMsg);
+                //     }else{
+                //         this.app.io.emit("error", {msg: "Preencha corretamente"});
+                //         console.log(data, "preencha corretamente");
+                //     }
+                // });
+
                 socket.on('getMsg', (data: msgInterface) => {
                     if(data.toid){
                         const newMsg: msgInterface = {
@@ -76,7 +107,20 @@ class ServerFasti {
                             name: data.name
                         }
 
-                        socket.broadcast.to(data.toid).emit('sendMsg', newMsg);
+                        if(!data.idUser) {
+                            return;
+                        }
+
+                        // console.log(data);
+                        // socket.broadcast.to(data.toid).emit('sendMsg', newMsg);
+                        
+                        // console.log(data.idUser);
+                        // const room = this.app.io.sockets.adapter.rooms.get(data.idUser.toString());
+                        // console.log("ROOM: ", room);
+                        // console.log("size: ", room?.size);
+                        console.log("menssagem: ", newMsg);
+                        
+                        this.app.io.to(data.idUser.toString()).emit('sendMsg', newMsg);
                     } else {
                         this.app.io.emit("error", {msg: "Preencha corretamente"});
                         console.log(data, "preencha corretamente");

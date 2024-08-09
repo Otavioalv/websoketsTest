@@ -16,6 +16,21 @@ export async function routers(fastify: FastifyInstance, options: FastifyPluginOp
         res.status(200).send({message: "success test API"});
     });
 
+    fastify.post('/get-user-by-name', async(req: FastifyRequest, res: FastifyReply) => {
+        const connection = await pool.getConnection();
+        try {
+            const data = await req.body as {username: string};
+            const [user] = await  connection.execute("SELECT id, name, socket_id as socketId FROM user WHERE name = ?", [data.username]) as [[{id: number, name: string, socketId:string}], any];
+
+            res.status(200).send({message: "usuario encontrado", data: user[0]});
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({message: "Erro interno no servidor"});
+        }finally {
+            connection.release(); // Liberar a conexão
+        }
+    });
+
     fastify.post('/login', async(req: FastifyRequest, res: FastifyReply) => {
         const connection = await pool.getConnection();
         try {
@@ -88,7 +103,7 @@ export async function routers(fastify: FastifyInstance, options: FastifyPluginOp
             const [listMessage, _] = await connection.query('SELECT id_message as idMessage, to_user as toUser, message, fk_id_user as idUser FROM message WHERE fk_id_user = ? OR to_user = ?', [data.id, data.id]) as [[{idMessage:number, toUser: number, message: string, idUser: number}] , any];
             const [listUser] = await connection.query("SELECT id, name, socket_id as socketId FROM user") as [[{id: number, name: string, socketId: string}], any];
             
-            console.log(listMessage);
+            // console.log(listMessage);
             // idMessage:number, toUser: number, message: string, idUser: number
             const newlistList: {idMessage:number, toUser: number, message: string, idUser: number, toName: string}[]  = 
             listMessage.map((mgs, i) => { 

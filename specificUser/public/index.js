@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await socket.on('userList', async (userList) => {
 
         userListDb = userList;
-
+        console.log("DB: ", userListDb);
         const listUsers = document.getElementById('list-users');
         listUsers.innerHTML = "";
         userList.forEach(user => {
@@ -35,13 +35,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await socket.on('sendMsg', (data) => {
         // salvar menssagens em uma lista do proprio usuario
+        // console.log(data);
         console.log(data);
         otherUserMessage(data);
         // <li>ussuario says: message to usser</li>
     });
 
     await socket.on('connect', async () => {
-        console.log(username, socket.id);
+        // console.log(username, socket.id);
         yourself = await fetch('http://127.0.0.1:8092/login', {
             method: 'POST',
             headers: {
@@ -51,9 +52,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }).then(async (res) => {
             return await res.json()
         }).then(async (res) => {
-            console.log(res);
+            // console.log(res);
             return res.datas;
         })
+
+        // console.log(yourself);
+        await socket.emit('user-room', yourself);
 
         const listMessages = await fetch('http://127.0.0.1:8092/get-message', {
             method: 'POST',
@@ -69,11 +73,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         listMessages.forEach((msgs, i) => {
             if(msgs.idUser === yourself.id) {
-                console.log("vc eviou");
+                // console.log("vc eviou");
                 yourMessage(msgs.message);
             }
             if(msgs.toUser === yourself.id) {
-                console.log("vc recebeu: ", msgs.message)
+                // console.log("vc recebeu: ", msgs.message)
                 otherUserMessage({name: msgs.toName, msg: msgs.message});
             }
         });
@@ -107,7 +111,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // data = {name: string, msg: string}
     function otherUserMessage(data) {
-        console.log(data);
+        // console.log(data);
         const listMessageElement = window.document.getElementById('listMessages');
         const newlistElement = window.document.createElement('li');
 
@@ -135,7 +139,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return username;
     }
     
-    function sendMessage() {
+    async function sendMessage() {
         const messageElement = document.getElementById('message');
 
         if(!selectedUser) {
@@ -144,11 +148,25 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
+        const toUserData = await fetch('http://127.0.0.1:8092/get-user-by-name', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({username: selectedUser.username}),
+        }).then(async (res) => {
+            return await res.json()
+        }).then(async (res) => {
+            return res.data;
+        })
+
+
         const user = userListDb.find(user => user.id === socket.id);
         const messageobj = {
             msg: messageElement.value,
             name: user.username,
-            toid: selectedUser.id
+            toid: selectedUser.id,
+            idUser: toUserData.id
         }
         messageElement.value = "";
 
@@ -161,8 +179,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             },
             body: JSON.stringify({toUser: selectedUser, message: messageobj.msg, id: yourself.id}),
         }).then(async (res) => {
-            console.log(await res.json())
+            // console.log(await res.json())
         })  
+
 
         socket.emit('getMsg', messageobj);
     }
